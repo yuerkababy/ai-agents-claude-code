@@ -1,0 +1,13 @@
+# RETRO: Week 5 Retrospective
+ 
+## 1. Plan Mode value
+The clearest case where amending a plan saved me from a revert was Session 2 in PLAN_LOG.md. Claude's first plan for `GET /api/tasks` read the filter with `request.args.get("priority", type=int)`. Claude admitted in the plan that this turns a bad value like `?priority=abc` into nothing, so the route would quietly return **every** task with a 200 instead of an error. All the existing tests would still have passed, so I wouldn't have noticed until someone used the filter and got wrong results. Then I would have had to go back and redo both `routes/api.py` and `services/tasks.py`. Because I caught it in the plan, I changed it before any code was written: the route passes the raw text to `list_tasks`, which turns bad text into a `ValidationError` (422), and a new test in `tests/test_api.py` checks `?priority=abc`.
+
+## 2. Plan Mode limits
+The one case where the output didn't match the amended plan was Session 4. The code changes were exactly what I approved but after finishing, Claude also saved a memory note (`tests-create-own-data.md`) and added a line to `MEMORY.md`, without reading that file first and neither step was in the plan. This showed me that Plan Mode only controls what Claude says it will do before it starts. Once I approve, nothing checks that Claude does only that.
+
+## 3. Subagent value
+The most important boundary was between SA-2 (`routes/api.py`) and SA-1 (`services/users.py`). SA-2 had to make a PATCH with no `notification_pref` value return a 422. The quickest fix would have been an extra check in `services/users.py`, but SA-2 wasn't allowed to touch that file. That forced Claude to keep the route simple (`data.get(...)`) and rely on the check SA-1 had already written. If I had let Claude build the whole feature in one session, I think it would have put that check wherever was most convenient, and the tests would have been written by the same session that wrote the code, so they would test what Claude built rather than what the spec asked for. Splitting the work also let me run `pytest -q` after each step, so if something had broken, I would have known exactly which subagent caused it.
+
+## 4. Gap analysis
+

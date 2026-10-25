@@ -1,0 +1,19 @@
+You now have two amended rows, which meets that rubric requirement. You also already have the two required filtering tests (test_list_tasks_filter_by_priority and the ?priority=abc HTTP test).
+
+For your RETRO notes: Session 2 is also your best example for paragraph 1 (“where amending the plan prevented a problem”). Without the amendment, a bad filter would have silently returned wrong results.
+
+│ Two of your constraints conflict. "Reuse create_task's priority validation, don't write a second copy" means pulling the check out of create_task into a shared helper. That changes create_task and adds a third function. But "Only add update_task and update_task_route" and CLAUDE.md's "change only the function the prompt names" rule forbid that. Which constraint should give way?
+1. Extract a shared helper (Recommended)
+     Add a private _validate_priority(priority) in services/tasks.py. create_task and update_task both call it. create_task's behavior stays the same, but its body changes by one line. list_tasks keeps its own copy, untouched.
+  2. Duplicate the check inline
+     update_task repeats create_task's one-line isinstance/range check. Only the two named functions are added and create_task is untouched, but the validation now exists in three places (list_tasks already has a copy).
+  3. Helper + list_tasks too
+     Extract _validate_priority and use it in create_task, update_task, AND list_tasks. Removes all duplication, but touches two existing functions.
+  4. Type something.
+Claude caught the contradiction and stopped to ask instead of quietly breaking a rule. That’s exactly what your CLAUDE.md tells it to do (“If a task seems to require breaking one of these, stop and explain”). Save this for RETRO paragraph 2 or 3; it’s a nice example of the rules file working.
+
+Good: nothing in your project folder changed, so this is less serious than if it had edited CLAUDE.md. It’s still a clear, honest divergence, and there’s an even better detail: Claude appended to MEMORY.md without reading it first.
+One thing before Task 2: delete that memory note. Task 2 requires each subagent to start fresh with no carried-over context. Claude Code loads that memory note into every new session in this project, even after /clear, so it would quietly leak into your Task 2 sessions. Your CLAUDE.md already has the same rule anyway (“create the task inside the test first”), so you lose nothing.
+In Claude Code (normal mode is fine for this), say:
+Please delete tests-create-own-data.md and remove the line you added to MEMORY.md. Don't change anything else in MEMORY.md.
+Write this down for later. It’s strong evidence for your RETRO: “memory survives /clear, so a fresh session isn’t fully fresh.” It could even become your paragraph 4 hook idea.

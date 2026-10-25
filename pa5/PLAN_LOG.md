@@ -1,0 +1,19 @@
+# PLAN_LOG
+
+**Feature:** Tasks get a `priority` field on tasks (1 = urgent, 5 = low, default 3). You can set it when creating a task (POST /tasks), change it later (PATCH /tasks/{id}), see it on every task, and filter tasks by it (GET /tasks?priority=n).
+
+| Session # | Prompt summary (<=15 words) | Did you amend the plan? | What you changed | Did output match amended plan? |
+|---|---|---|---|---|
+| 1 | Add priority (default 3) to `TASKS` seeds, `create_task`, and `create_task_route` | Yes | Original plan set all 3 seed tasks to priority 3. Amended to 1 / 3 / 5 so the Session 2 filter (`GET /tasks?priority=n`) has distinct values to filter on; with all-3, a filter test couldn't show anything being excluded. | Yes |
+| 2 | Add `list_tasks(priority)` service + `GET /api/tasks` route with `?priority` filter | Yes | Original plan used `request.args.get("priority", type=int)`, which turns `?priority=abc` into `None`, so a bad filter silently returned every task (200). Amended: route passes the raw string, `list_tasks` converts it with `int()` and raises `ValidationError` -> 422; added an HTTP test for `?priority=abc`. Claude chose to put that test in a new `tests/test_api.py` (following CLAUDE.md's `test_<module>.py` rule) rather than `tests/test_tasks.py`. | Yes |
+| 3 | Add `update_task` service + `PATCH /api/tasks/<id>` route, reusing `create_task`'s priority validation | Yes | Prompt had a built-in conflict ("only add `update_task`/`update_task_route`" vs "reuse `create_task`'s validation"). Claude stopped and asked instead of breaking the CLAUDE.md "change only the function the prompt names" rule. Chose option 1: extract a private `_validate_priority` helper, allowing a one-line change to `create_task`, `list_tasks` untouched. Then amended the plan to add an HTTP test for PATCH with an empty body `{}` -> 422, because the plan claimed that case was handled but didn't test it. | Yes |
+| 4 | Make `list_tasks` reuse `_validate_priority`; add HTTP tests that priority appears in all task responses | Yes | Plan's filter test relied on seed tasks 1-3 and claimed no other test patches them, which I couldn't verify (Session 3's PATCH tests target existing tasks). Amended so the test creates its own priority-5 and priority-1 tasks, per CLAUDE.md's "create the task inside the test first" rule. **Divergence:** the code matched the amended plan, but after finishing, Claude also wrote two files that were not in the plan, a new memory note (`~/.claude/projects/.../memory/tests-create-own-data.md`) and an appended line in `MEMORY.md`, added with `Add-Content` without reading the file first. Plan Mode only previews the planned edits; nothing flagged this extra write after the plan was approved. | Partially |
+
+## Final verification
+```
+❯ pytest -q
+
+  Ran 1 shell command
+
+All 26 tests passed (0.35s).
+```
