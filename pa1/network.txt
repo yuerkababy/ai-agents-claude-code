@@ -1,0 +1,5 @@
+Base network: 10.10.0.0/16
+Users,20
+Engineering,10
+Servers,5
+Management,3
