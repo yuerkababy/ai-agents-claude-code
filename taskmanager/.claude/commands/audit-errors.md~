@@ -1,0 +1,24 @@
+## Goal
+Audit $ARGUMENTS so that no function lets a raw exception escape (KeyError,
+ValueError, TypeError, etc) and replace each one with the correct AppError subclass from utils/errors.py.
+
+## Context
+- Canonical pattern: get_user and create_user in services/users.py. They check `if user_id not in USERS` before indexing, and validate before mutating.
+- AppError hierarchy in utils/errors.py: AppError, NotFoundError("Task"),
+  ValidationError("field", "message").
+- The @api.errorhandler(AppError) in routes/api.py turns these into
+  {"error": message} plus a status code, so services only need to raise.
+- Data lives in the module-level TASKS and USERS dicts. There is no database.
+
+## Constraints
+- Edit only $ARGUMENTS. Do not modify utils/errors.py, routes/api.py, or
+  tests/test_tasks.py.
+- Do not change process_order. If it lets a raw KeyError escape, report it in your summary instead of fixing it.
+- Use only existing AppError subclasses. Do not add new ones.
+- Do not change any function name or signature.
+- If a function already uses AppError correctly, skip it and do not rewrite it
+
+## Verification
+- Run `pytest -q` after every function you change.
+- All tests must pass before moving to the next function.
+- When finished, run `ruff check .` and report final pytest output.

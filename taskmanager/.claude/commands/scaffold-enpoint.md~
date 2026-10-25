@@ -1,0 +1,13 @@
+## Goal
+$ARGUMENTS accepts two values: resource name and HTTP method to scaffolf a new API endpoint. name route, service, schema files
+
+## Context
+- Canonical pattern: routes/tasks.py.
+
+## Constraints
+- Do not writing business login in route handler.
+
+## Verification
+- Run `pytest -q` after every change each endpoint and it must return the correct HTTP status on a happy path.
+- All tests must pass before moving to the next function.
+- When finished, run `ruff check .` and report final pytest output.

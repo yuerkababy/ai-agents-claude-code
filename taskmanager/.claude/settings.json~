@@ -1,0 +1,16 @@
+{
+    "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Write|Edit|MultiEdit|Bash|PowerShell",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "python .claude/hooks/guard_writes.py",
+                        "timeout": 10
+                    }
+                ]
+            }
+        ]
+    }
+}
