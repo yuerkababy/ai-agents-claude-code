@@ -1,0 +1,19 @@
+#include only these folders
+/*
+!/.gitignore
+!/pa1/
+!/pa2/
+!/pa3/
+!/pa4/
+!/pa5/
+!/pa6/
+!/taskmanager/
+# never push these
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+node_modules/
+.claude/settings.local.json
+"@ | Set-Content .gitignore -Encoding ascii
