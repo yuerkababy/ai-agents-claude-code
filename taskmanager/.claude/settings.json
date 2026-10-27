@@ -12,5 +12,21 @@
                 ]
             }
         ]
+    },
+    "mcpServers": {
+        "filesystem": {
+            "command": "cmd",
+            "args": [
+                "/c",
+                "npx",
+                "-y",
+                "@modelcontextprotocol/server-filesystem",
+                "C:/Users/georg/Documents/claude-projects/taskmanager"
+            ]
+        },
+        "task-db": {
+            "command": "node",
+            "args": ["C:/Users/georg/Documents/claude-projects/pa7/task-db-server/index.js"]
+        }
     }
 }

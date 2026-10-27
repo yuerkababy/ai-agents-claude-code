@@ -1,16 +1,3 @@
-"""
-Creates tasks.db for the PA7 task-db-server MCP project.
-
-Usage (from the pa7 folder):
-    python create_tasks_db.py
-
-By default the database is created in the task-manager folder. Pass a
-different path as an argument if needed:
-    python create_tasks_db.py "C:\\some\\other\\path\\tasks.db"
-
-The script will not overwrite an existing tasks.db.
-"""
-
 import os
 import sqlite3
 import sys
